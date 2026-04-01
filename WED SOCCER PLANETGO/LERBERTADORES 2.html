@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TV PRO</title>
+
+<!-- VIDEO JS -->
+<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0b0f1a;
+    color: #fff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #111827;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.live {
+    background: red;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.container {
+    padding: 15px;
+    max-width: 500px;
+    margin: auto;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 230px;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.video-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    transition: 0.3s ease;
+}
+
+.video-js {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.badge-video-live {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: red;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+    z-index: 5;
+    display: none;
+}
+
+.badge-live {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: red;
+    padding: 5px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+}
+
+#loader {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#000;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:10;
+}
+
+.ball-bounce {
+    font-size: 40px;
+    animation: bounce 0.8s infinite ease-in-out;
+}
+
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-40px); }
+}
+
+.shadow {
+    width: 30px;
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    margin-top: -10px;
+}
+
+.loader-text {
+    margin-top:15px;
+    font-size:14px;
+}
+
+h2 {
+    margin: 10px 0;
+}
+
+.btn {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    margin-top: 12px;
+    border-radius: 12px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    background: #1f2937;
+    transition: 0.2s;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.btn:hover {
+    background: #374151;
+}
+
+.btn-main {
+    background: linear-gradient(180deg, #00ff87, #00c853);
+}
+
+.btn-web {
+    background: linear-gradient(180deg, #7b2cff, #4b00ff);
+}
+
+.btn-alt {
+    background: linear-gradient(180deg, #ff7a18, #ff3d00);
+}
+
+.btn-alt2 {
+    background: linear-gradient(180deg, #00c6ff, #0072ff);
+}
+
+.info-box {
+    background: rgba(255,255,255,0.05);
+    border-left: 4px solid #00c853;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #ccc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo" id="appName">TV PRO</div>
+    <div class="live">● EN VIVO</div>
+</div>
+
+<div class="container">
+
+<div class="video-container">
+
+    <div class="badge-live">EN VIVO</div>
+
+    <iframe id="player"
+        src="https://la14hd.com/vivo/canales.php?stream=espn"
+        allow="autoplay; fullscreen"
+        allowfullscreen>
+    </iframe>
+
+    <video id="videojs" class="video-js vjs-default-skin" controls playsinline></video>
+
+    <div class="badge-video-live" id="videoLive">EN VIVO</div>
+
+    <div id="loader">
+        <div class="ball-bounce">⚽</div>
+        <div class="shadow"></div>
+        <div class="loader-text">CARGANDO CANAL...</div>
+    </div>
+
+</div>
+
+<h2>⚽ COPA LIBERTADORES</h2>
+
+<div class="info-box">
+👉 Presiona cualquiera de los servidores para comenzar a ver el partido en vivo.
+</div>
+
+<a class="btn btn-main" onclick="cambiarWeb('https://la14hd.com/vivo/canales.php?stream=espn')">
+SERVIDOR PRINCIPAL
+</a>
+
+<a class="btn btn-web" onclick="cambiarWeb('https://la14hd.com/vivo/canales.php?stream=espn2')">
+SERVIDOR WEB
+</a>
+
+<div class="info-box">
+⚠️ Los servidores alternos solo se activan cuando hay partidos en vivo.
+</div>
+
+<a href="#" onclick="usarVideo('https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8')" class="btn btn-alt">
+SERVIDOR ALTERNO 1
+</a>
+
+<a href="#" onclick="usarVideo('https://dai.google.com/linear/hls/event/_OKWx76jT7mivD6d-25QAw/master.m3u8')" class="btn btn-alt2">
+SERVIDOR ALTERNO 2
+</a>
+
+</div>
+
+<script>
+let bloqueado = false;
+let playerVJS = videojs('videojs');
+
+const loader = document.getElementById("loader");
+
+playerVJS.on('playing', () => {
+    loader.style.display = "none";
+});
+
+function cambiarWeb(url) {
+    if (bloqueado) return;
+    bloqueado = true;
+
+    const player = document.getElementById("player");
+    const video = document.getElementById("videojs");
+    const live = document.getElementById("videoLive");
+
+    loader.style.display = "flex";
+
+    playerVJS.pause();
+    video.style.display = "none";
+    live.style.display = "none";
+
+    player.style.display = "block";
+    player.style.opacity = "0.4";
+
+    setTimeout(() => {
+        player.src = url;
+    }, 200);
+
+    setTimeout(() => {
+        player.style.opacity = "1";
+        loader.style.display = "none";
+        bloqueado = false;
+    }, 3000);
+}
+
+function usarVideo(url) {
+
+    const iframe = document.getElementById("player");
+    const video = document.getElementById("videojs");
+    const live = document.getElementById("videoLive");
+
+    loader.style.display = "flex";
+
+    iframe.src = "";
+    iframe.style.display = "none";
+
+    video.style.display = "block";
+    live.style.display = "block";
+
+    playerVJS.src({
+        src: url,
+        type: "application/x-mpegURL"
+    });
+
+    // 🔥 FIX IMPORTANTE
+    playerVJS.muted(true);
+
+    playerVJS.play().then(() => {
+        loader.style.display = "none";
+    }).catch(() => {
+        loader.style.display = "none";
+    });
+}
+
+document.getElementById("appName").innerText =
+"Barcelona SC vs Cruzeiro";
+
+/* 🔥 AUTO INICIO ALTERNO 1 */
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        usarVideo('https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8');
+    }, 900);
+});
+</script>
+
+</body>
+</html>
