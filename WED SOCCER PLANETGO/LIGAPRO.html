@@ -265,7 +265,6 @@ function usarVideo(url) {
         type: "application/x-mpegURL"
     });
 
-    // 🔥 FIX AUTOPLAY
     playerVJS.muted(true);
 
     playerVJS.play().then(() => {
@@ -278,11 +277,38 @@ function usarVideo(url) {
 document.getElementById("appName").innerText =
 "Liga de Quito vs Barcelona SC";
 
-/* 🔥 AUTO INICIO REAL */
 window.addEventListener("load", () => {
     setTimeout(() => {
         usarVideo('https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8');
     }, 900);
+});
+</script>
+
+<!-- 🔥 FIX INVISIBLE (NO TOCA TU UI) -->
+<script>
+function guardarEstado() {
+    const iframe = document.getElementById("player");
+
+    const estado = {
+        tipo: iframe.style.display !== "none" ? "web" : "m3u8",
+        url: iframe.src || (playerVJS.currentSource() ? playerVJS.currentSource().src : "")
+    };
+
+    localStorage.setItem("estadoPlayer", JSON.stringify(estado));
+}
+
+// cuando sales (publicidad)
+window.addEventListener("blur", guardarEstado);
+
+// cuando vuelves
+window.addEventListener("load", () => {
+    const data = localStorage.getItem("estadoPlayer");
+    if (!data) return;
+
+    const estado = JSON.parse(data);
+
+    if (estado.tipo === "web" && estado.url) cambiarWeb(estado.url);
+    if (estado.tipo === "m3u8" && estado.url) usarVideo(estado.url);
 });
 </script>
 
