@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Soccer Planet GO</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
+<script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
+
+<style>
+body {margin:0;font-family:'Segoe UI';background:#0b0f1a;color:#fff;}
+
+.header {position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:15px;background:#111827;}
+.logo{font-weight:bold;font-size:16px;}
+.live{background:red;padding:5px 10px;border-radius:20px;font-size:12px;}
+
+.container{padding:10px;max-width:500px;margin:auto;}
+
+.video-container{
+position:sticky;
+top:60px;
+border-radius:15px;
+overflow:hidden;
+background:#000;
+margin-bottom:10px;
+height:220px;
+}
+
+video{
+width:100%;
+height:100%;
+object-fit:contain; /* 🔥 evita zoom y recorte */
+background:#000;
+}
+
+.live-label{position:absolute;bottom:10px;left:10px;background:red;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;z-index:20;}
+
+.loader{
+position:absolute;
+width:100%;
+height:100%;
+background:#000; /* 🔥 fondo negro sólido */
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+z-index:30;
+}
+.ball{font-size:42px;animation:bounce .8s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+
+.channel{
+    display:flex;
+    align-items:center;
+    background:#111827;
+    padding:10px;
+    border-radius:12px;
+    margin-bottom:8px;
+    cursor:pointer;
+    transition: all 0.25s ease;
+}
+
+/* 🔥 HOVER */
+.channel:hover{
+    transform: scale(1.03);
+    background:#1f2937;
+}
+
+/* 🔥 CLICK (TOQUE) */
+.channel:active{
+    transform: scale(0.97);
+}
+
+.channel.active{
+    border:1px solid #00ff87;
+    box-shadow:0 0 10px rgba(0,255,135,0.4);
+}
+
+.channel img{
+    width:60px;
+    height:40px;
+    margin-right:10px;
+    border-radius:6px;
+    object-fit:contain;
+    background:#000;
+    transition: transform 0.3s ease;
+}
+
+.channel:hover img{
+    transform: scale(1.1);
+}
+.channel.active{border:1px solid #00ff87;}
+.channel img{width:60px;height:40px;margin-right:10px;border-radius:6px;object-fit:contain;background:#000;}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<div class="logo" id="title">TV EN VIVO</div>
+<div class="live">● EN VIVO</div>
+</div>
+
+<div class="container">
+
+<div class="video-container">
+<div class="loader" id="loader">
+<div class="ball">⚽</div>
+<span>Cargando canal...</span>
+</div>
+<div class="live-label">● EN DIRECTO</div>
+<video id="video" playsinline muted></video>
+</div>
+
+<div id="channels"></div>
+
+</div>
+
+<script>
+let video=document.getElementById("video");
+let loader=document.getElementById("loader");
+let hls;
+let player=new Plyr(video,{controls:['play','mute','volume','fullscreen']});
+
+const channels=[
+{name:"Ecuavisa",logo:"https://res.cloudinary.com/dgijvtelg/image/upload/v1775074423/httpssamson.streamerr.co8081shoguntracks-v1a1mono.m3u8_6_z2uozt.png",url:"https://redirector.rudo.video/hls-video/c54ac2799874375c81c1672abb700870537c5223/ecuavisa/ecuavisa.smil/playlist_dvr.m3u8?did=b2156189529469c2d21854194"},
+{name:"Teleamazonas",logo:"https://res.cloudinary.com/dgijvtelg/image/upload/v1775074425/httpssamson.streamerr.co8081shoguntracks-v1a1mono.m3u8_2_egjuvn.png",url:"https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8"},
+{name:"RTS",logo:"https://res.cloudinary.com/dgijvtelg/image/upload/v1775074424/httpssamson.streamerr.co8081shoguntracks-v1a1mono.m3u8_3_s7lqkz.png",url:"https://d2qsan2ut81n2k.cloudfront.net/live/72a3661e-1019-45f8-af10-af59f6ef6222/ts:abr.m3u8"},
+{name:"Oromar",logo:"https://res.cloudinary.com/dgijvtelg/image/upload/v1775074423/httpssamson.streamerr.co8081shoguntracks-v1a1mono.m3u8_4_gwancj.png",url:"https://stream.oromar.tv/hls/oromartv_hi/index.m3u8"},
+{name:"Ecuador TV",logo:"https://res.cloudinary.com/dgijvtelg/image/upload/v1775074423/httpssamson.streamerr.co8081shoguntracks-v1a1mono.m3u8_5_et37k7.png",url:"https://samson.streamerr.co:8081/shogun/tracks-v1a1/mono.m3u8"},
+{name:"Claro Sports",logo:"https://res.cloudinary.com/dgijvtelg/image/upload/v1775074422/Dise%C3%B1o_sin_t%C3%ADtulo_23_q4x9hh.png",url:"https://dai.google.com/linear/hls/event/_OKWx76jT7mivD6d-25QAw/master.m3u8"}
+];
+
+const container=document.getElementById('channels');
+
+function play(url,el,name){
+
+// 🔥 mostrar loader con fondo negro
+loader.style.display="flex";
+
+// 🔥 ocultar loader cuando el video realmente empieza
+video.onplaying = () => {
+    loader.style.display = "none";
+};
+
+loader.style.display="flex";
+if(hls)hls.destroy();
+
+// FIX SOLO RTS
+if(url.includes("cloudfront")){
+    video.src=url;
+    video.play().catch(()=>{});
+    setTimeout(()=>{/* loader se oculta con onplaying */},1200);
+}else{
+    if(Hls.isSupported()){
+        hls=new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+            video.play().catch(()=>{});
+            /* loader se oculta con onplaying */
+        });
+    }else{
+        video.src=url;
+        video.onloadeddata=()=>{
+            /* loader se oculta con onplaying */
+            video.play().catch(()=>{});
+        };
+    }
+}
+
+container.querySelectorAll('.channel').forEach(c=>c.classList.remove('active'));
+el.classList.add('active');
+document.getElementById('title').innerText=name;
+}
+
+channels.forEach((ch,i)=>{
+let div=document.createElement('div');
+div.className='channel';
+div.innerHTML=`<img src="${ch.logo}"><div>${ch.name}</div>`;
+div.onclick=()=>play(ch.url,div,ch.name);
+container.appendChild(div);
+
+// 🔥 AUTO PLAY TELEAMAZONAS AL INICIAR (COMPATIBLE)
+if(ch.name === "Teleamazonas"){
+    setTimeout(()=>{
+        video.muted = true; // iniciar en mute para evitar bloqueo
+        play(ch.url,div,ch.name);
+
+        // 🔊 activar audio al primer toque del usuario
+        document.body.addEventListener('click',()=>{
+            video.muted = false;
+        },{once:true});
+
+    },500);
+}
+});
+
+</script>
+
+</body>
+</html>
