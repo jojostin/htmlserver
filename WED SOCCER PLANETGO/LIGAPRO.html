@@ -6,7 +6,6 @@
 <title>TV PRO</title>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
 <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
 
@@ -18,17 +17,21 @@ body {
     color: #fff;
 }
 
+* { transition: all 0.25s ease; }
+
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
     background: #111827;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 
-.logo {
-    font-weight: bold;
+.logo { 
+    font-weight: bold; 
     font-size: 18px;
+    animation: fadeSlide 1s ease;
 }
 
 .live {
@@ -36,6 +39,7 @@ body {
     padding: 5px 10px;
     border-radius: 20px;
     font-size: 12px;
+    animation: pulse 1.5s infinite;
 }
 
 .container {
@@ -57,10 +61,9 @@ body {
 video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
-/* 🔴 EN DIRECTO */
 .live-label {
     position: absolute;
     bottom: 10px;
@@ -73,12 +76,11 @@ video {
     z-index: 20;
 }
 
-/* ⚽ LOADER */
 .loader {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.85);
+    background: #000;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -88,7 +90,7 @@ video {
 
 .ball {
     font-size: 42px;
-    animation: bounce 0.8s infinite ease-in-out;
+    animation: bounce 0.6s infinite ease-in-out;
 }
 
 @keyframes bounce {
@@ -96,12 +98,70 @@ video {
     50% { transform: translateY(-20px); }
 }
 
-.loader span {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #ccc;
+/* ANUNCIO */
+#adOverlay{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#000;
+    z-index:40;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
 }
 
+#adBox{
+    background:#111827;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    max-width:280px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.8);
+}
+
+#adBox h3{
+    margin:0;
+    margin-bottom:10px;
+    color:#00ff87;
+}
+
+#adBox p{
+    font-size:13px;
+    color:#ccc;
+}
+
+#adOverlay iframe{
+    width:100%;
+    height:100%;
+    border:none;
+    display:none;
+}
+
+#verAdBtn{
+    margin-top:15px;
+    padding:10px;
+    width:100%;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(#00ff87,#00c853);
+    font-weight:bold;
+}
+
+#skipBtn{
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    background:rgba(0,0,0,0.7);
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:12px;
+    display:none;
+}
+
+/* BOTONES (TU CÓDIGO ORIGINAL + FÍSICA) */
 .btn {
     display: block;
     text-align: center;
@@ -111,7 +171,28 @@ video {
     color: #fff;
     text-decoration: none;
     font-weight: 600;
-    background: #1f2937;
+
+    /* 🔥 física visual */
+    position: relative;
+    transform: translateY(0);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.25);
+}
+
+/* 🔥 presión física */
+.btn:active {
+    transform: translateY(4px) scale(0.97);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.25);
+}
+
+/* 🔥 aparición con rebote */
+@keyframes btnPop {
+    0% { transform: scale(0.95); }
+    60% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+.btn {
+    animation: btnPop 0.4s ease;
 }
 
 .btn-main { background: linear-gradient(#00ff87,#00c853); }
@@ -142,46 +223,42 @@ video {
 
 <div class="video-container">
 
-    <!-- ⚽ LOADER -->
     <div class="loader" id="loader">
         <div class="ball">⚽</div>
         <span>Cargando canal...</span>
     </div>
 
-    <!-- 🔴 LIVE -->
-    <div class="live-label">● EN DIRECTO</div>
+    <div id="adOverlay">
+        <div id="adBox">
+            <h3>📺 Apoya la app</h3>
+            <p>Mira un anuncio de 15 segundos para continuar disfrutando del contenido en vivo.</p>
+            <button id="verAdBtn">Ver anuncio</button>
+        </div>
 
-    <!-- 🎬 VIDEO -->
-    <video id="player" playsinline muted autoplay></video>
+        <iframe id="adFrame"></iframe>
+        <div id="skipBtn">Saltar en 15</div>
+    </div>
+
+    <div class="live-label">● EN DIRECTO</div>
+    <video id="player" playsinline muted></video>
 
 </div>
 
-<h2>⚽LIGA PRO</h2>
+<h2>⚽ LIGA PRO</h2>
 
 <div class="info-box">
 👉 Presiona cualquiera de los servidores para comenzar a ver el canal en vivo.
 </div>
 
-<a class="btn btn-main" onclick="cambiarWeb(link)">
-SERVIDOR PRINCIPAL
-</a>
-
-<a class="btn btn-web" onclick="cambiarWeb(link)">
-SERVIDOR WEB
-</a>
+<a class="btn btn-main" onclick="abrirConAnuncio(link)">SERVIDOR PRINCIPAL</a>
+<a class="btn btn-web" onclick="abrirConAnuncio(link)">SERVIDOR WEB</a>
 
 <div class="info-box">
-⚠️ Los servidores alternos solo se activan cuando hay señal en vivo.
+⚠️ Los servidores solo se activan cuando hay partidos en vivo.
 </div>
 
-<!-- 🔥 NO TOCAR -->
-<a href="https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8" class="btn btn-alt">
-SERVIDOR ALTERNO 1
-</a>
-
-<a href="https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8" class="btn btn-alt2">
-SERVIDOR ALTERNO 2
-</a>
+<a class="btn btn-alt" onclick="abrirConAnuncio(link2)">SERVIDOR ALTERNO 1</a>
+<a class="btn btn-alt2" onclick="abrirConAnuncio(link3)">SERVIDOR ALTERNO 2</a>
 
 </div>
 
@@ -189,51 +266,110 @@ SERVIDOR ALTERNO 2
 let video = document.getElementById("player");
 let loader = document.getElementById("loader");
 let hls;
-let player;
+let player = new Plyr(video,{controls:['play','mute','volume','fullscreen']});
 
-player = new Plyr(video, {
-    controls: ['play', 'mute', 'volume', 'fullscreen']
-});
+let link = "https://live20.bozztv.com/giatv/giatv-mienvento2026jostin/mienvento2026jostin/playlist.m3u8";
+let link2 = "https://live20.bozztv.com/akamaissh101/ssh101/mienvento2026/playlist.m3u8";
+let link3 = "https://live20.bozztv.com/giatv/giatv-mienvento2026jostin/mienvento2026jostin/playlist.m3u8";
 
-let link = "https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8";
+let urlActual = link;
 
-function cambiarWeb(url) {
+/* abrir anuncio */
+function abrirConAnuncio(url){
+
+    if(hls){
+        hls.destroy();
+        hls = null;
+    }
+
+    video.pause();
+    video.src = "";
+    video.load();
 
     loader.style.display = "flex";
 
-    if (Hls.isSupported()) {
-        if (hls) hls.destroy();
+    urlActual = url;
+    adOverlay.style.display = "flex";
+    adBox.style.display = "block";
+    adFrame.style.display = "none";
+    skipBtn.style.display = "none";
+}
 
+/* anuncio */
+let verBtn = document.getElementById("verAdBtn");
+let adFrame = document.getElementById("adFrame");
+let skipBtn = document.getElementById("skipBtn");
+let adOverlay = document.getElementById("adOverlay");
+let adBox = document.getElementById("adBox");
+
+verBtn.onclick = () => {
+
+    adFrame.src = "https://www.profitablecpmratenetwork.com/h8ku4uzbj?key=99c63b5abebc9aaf044650fe8ad01da6";
+
+    adBox.style.display = "none";
+    adFrame.style.display = "block";
+    skipBtn.style.display = "block";
+
+    let t = 15;
+
+    let intervalo = setInterval(()=>{
+        t--;
+        skipBtn.innerText = "Saltar en " + t;
+
+        if(t <= 0){
+            clearInterval(intervalo);
+            skipBtn.innerText = "SALTAR ANUNCIO";
+        }
+    },1000);
+};
+
+skipBtn.onclick = ()=>{
+    if(skipBtn.innerText === "SALTAR ANUNCIO"){
+        adOverlay.style.display = "none";
+        cambiarWeb(urlActual);
+    }
+};
+
+/* video */
+function activarAudio(){
+    video.muted = false;
+    video.volume = 1;
+}
+
+function cambiarWeb(url){
+
+    loader.style.display="flex";
+
+    video.onplaying = () => {
+        loader.style.display = "none";
+    };
+
+    if(Hls.isSupported()){
         hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(video);
 
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-            video.muted = true;
-            player.play().catch(() => {});
-        });
-
-        hls.on(Hls.Events.FRAG_BUFFERED, function () {
-            loader.style.display = "none";
+        hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+            video.play().then(()=>{
+                setTimeout(()=> activarAudio(),1000);
+            }).catch(()=>{});
         });
 
     } else {
         video.src = url;
-        video.addEventListener('loadeddata', () => {
-            loader.style.display = "none";
-            video.muted = true;
-            player.play().catch(() => {});
-        });
+        video.onloadeddata = ()=>{
+            video.play().then(()=>{
+                setTimeout(()=> activarAudio(),1000);
+            }).catch(()=>{});
+        };
     }
 }
 
-// 🚀 AUTOPLAY REAL
-window.onload = () => {
-    cambiarWeb(link);
-};
+document.addEventListener("click", activarAudio, {once:true});
+document.addEventListener("touchstart", activarAudio, {once:true});
 
 document.getElementById("appName").innerText =
-"Emelec vs Deportivo Cuenca";
+"Aucas vs Emelec";
 </script>
 
 </body>
