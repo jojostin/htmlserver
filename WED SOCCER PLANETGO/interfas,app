@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOCCER PLANETGO</title>
+
+<style>
+body {
+    margin: 0;
+    background: #0b0b0f;
+    color: white;
+    font-family: Arial, sans-serif;
+    padding-bottom: 70px;
+}
+
+/* HEADER */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(0,0,0,0.8);
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.header:active {
+    transform: scale(0.97);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+/* HERO */
+.hero {
+    height: 180px;
+    margin: 10px;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-text {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(0,0,0,0.4);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+/* SECCIONES */
+.section { padding: 10px; }
+.row { display: flex; overflow-x: auto; gap: 10px; }
+
+/* CARD */
+.card {
+    min-width: 140px;
+    height: 90px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card span {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.5);
+    padding: 3px 6px;
+    border-radius: 5px;
+}
+
+/* 🔥 MENÚ */
+.bottom-menu {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #0b0f1a;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+}
+
+.menu-item {
+    text-align: center;
+    color: #aaa;
+}
+
+.menu-item.active {
+    color: red;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">
+        <img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775104390/1256150_ico_ehtrq7.png">
+    </div>
+    <div class="live">● EN VIVO</div>
+</div>
+
+<style>
+.logo img { height: 40px; }
+.live { color: red; font-weight: bold; font-size: 16px; }
+</style>
+
+<!-- HERO -->
+<div class="hero" id="inicio" onclick="location.href='https://jojostin.github.io/htmlserver/WED%20SOCCER%20PLANETGO/LIGAPRO.html'">
+    <img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775064835/Dise%C3%B1o_sin_t%C3%ADtulo_9_vunrbg.png">
+    <div class="hero-text">Partido en vivo ahora</div>
+</div>
+
+<!-- LIGA PRO -->
+<div class="section">
+<h3>🔥 LIGA PRO</h3>
+<div class="row">
+<div class="card" onclick="location.href='https://jojostin.github.io/htmlserver/WED%20SOCCER%20PLANETGO/LIGAPRO.html'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775073151/Dise%C3%B1o_sin_t%C3%ADtulo_13_lkt4hy.png">
+<span>Liga de Quita vs Barcelona SC</span>
+</div>
+
+<div class="card" onclick="location.href='PEGA_AQUI_LINK_2'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775073151/Dise%C3%B1o_sin_t%C3%ADtulo_11_enqdz4.png">
+<span>Canal 1</span>
+</div>
+
+<div class="card" onclick="location.href='PEGA_AQUI_LINK_3'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775073152/Dise%C3%B1o_sin_t%C3%ADtulo_7_n04hrs.png">
+<span>Canal 2</span>
+</div>
+
+<div class="card" onclick="location.href='https://jojostin.github.io/htmlserver/WED%20SOCCER%20PLANETGO/LIGAPRO.html'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775073151/Dise%C3%B1o_sin_t%C3%ADtulo_12_ikre2y.png">
+<span>CUENCA VS EMELEC</span>
+</div>
+</div>
+</div>
+
+<!-- COPA LIBERTADORES -->
+<div class="section" id="envivo">
+<h3>📺 COPA LIBERTADORES</h3>
+<div class="row">
+
+<div class="card" onclick="location.href='PEGA_AQUI_LINK_ESPN'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775073950/Dise%C3%B1o_sin_t%C3%ADtulo_9_ihrjgn.png">
+<span>ESPN</span>
+</div>
+
+<div class="card" onclick="location.href='PEGA_AQUI_LINK_FOX'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775073949/Dise%C3%B1o_sin_t%C3%ADtulo_15_zaztxr.png">
+<span>FOX</span>
+</div>
+
+<div class="card" onclick="location.href='PEGA_AQUI_LINK_DIRECTV'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775073949/Dise%C3%B1o_sin_t%C3%ADtulo_16_wcvskf.png">
+<span>DIRECTV</span>
+</div>
+
+</div>
+</div>
+
+<!-- COPA SUDAMERICANA -->
+<div class="section">
+<h3>⚽ COPA SUDAMERICANA</h3>
+<div class="row">
+
+<div class="card" onclick="location.href='PEGA_AQUI_LINK_LIGAPRO'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775074110/Dise%C3%B1o_sin_t%C3%ADtulo_17_gm9ion.png">
+<span>Liga Pro</span>
+</div>
+
+<div class="card" onclick="location.href='PEGA_AQUI_LINK_CHAMPIONS'">
+<img src="https://res.cloudinary.com/dgijvtelg/image/upload/v1775074109/Dise%C3%B1o_sin_t%C3%ADtulo_18_kxqplw.png">
+<span>Champions</span>
+</div>
+
+</div>
+</div>
+
+<!-- 🔥 MENÚ -->
+<div class="bottom-menu">
+<div class="menu-item active" onclick="location.href='https://jojostin.github.io/htmlserver/WED%20SOCCER%20PLANETGO/canales.html'">
+🏠<br>Inicio
+</div>
+
+<div class="menu-item" onclick="location.href='https://jojostin.github.io/htmlserver/WED%20SOCCER%20PLANETGO/canales.html'">
+🔴<br>En vivo
+</div>
+
+<script>
+function goInicio() {
+document.getElementById("inicio").scrollIntoView({ behavior: 'smooth' });
+}
+function goEnVivo() {
+document.getElementById("envivo").scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
