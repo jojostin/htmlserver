@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TV PRO</title>
 
-<!-- VIDEO JS -->
-<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
+<script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
 
 <style>
 body {
@@ -17,18 +17,21 @@ body {
     color: #fff;
 }
 
+* { transition: all 0.25s ease; }
+
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
     background: #111827;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 
-.logo {
-    font-weight: bold;
+.logo { 
+    font-weight: bold; 
     font-size: 18px;
+    animation: fadeSlide 1s ease;
 }
 
 .live {
@@ -36,6 +39,7 @@ body {
     padding: 5px 10px;
     border-radius: 20px;
     font-size: 12px;
+    animation: pulse 1.5s infinite;
 }
 
 .container {
@@ -51,86 +55,110 @@ body {
     border-radius: 15px;
     overflow: hidden;
     margin-bottom: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    background: #000;
 }
 
-.video-container iframe {
+video {
     width: 100%;
     height: 100%;
-    border: none;
-    transition: 0.3s ease;
+    object-fit: contain;
 }
 
-.video-js {
+.live-label {
     position: absolute;
-    top: 0;
-    left: 0;
+    bottom: 10px;
+    left: 10px;
+    background: red;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 20;
+}
+
+.loader {
+    position: absolute;
     width: 100%;
     height: 100%;
-    display: none;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 30;
 }
 
-.badge-video-live {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: red;
-    padding: 5px 10px;
-    font-size: 12px;
-    border-radius: 20px;
-    z-index: 5;
-    display: none;
+.ball {
+    font-size: 42px;
+    animation: bounce 0.6s infinite ease-in-out;
 }
 
-.badge-live {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: red;
-    padding: 5px 10px;
-    font-size: 12px;
-    border-radius: 20px;
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
 }
 
-#loader {
+/* ANUNCIO */
+#adOverlay{
     position:absolute;
     top:0;
     left:0;
     width:100%;
     height:100%;
     background:#000;
+    z-index:40;
     display:flex;
     flex-direction:column;
-    align-items:center;
     justify-content:center;
-    z-index:10;
+    align-items:center;
 }
 
-.ball-bounce {
-    font-size: 40px;
-    animation: bounce 0.8s infinite ease-in-out;
+#adBox{
+    background:#111827;
+    padding:20px;
+    border-radius:15px;
+    text-align:center;
+    max-width:280px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.8);
 }
 
-@keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-40px); }
+#adBox h3{
+    margin:0;
+    margin-bottom:10px;
+    color:#00ff87;
 }
 
-.shadow {
-    width: 30px;
-    height: 8px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-    margin-top: -10px;
+#adBox p{
+    font-size:13px;
+    color:#ccc;
 }
 
-.loader-text {
+#adOverlay iframe{
+    width:100%;
+    height:100%;
+    border:none;
+    display:none;
+}
+
+#verAdBtn{
     margin-top:15px;
-    font-size:14px;
+    padding:10px;
+    width:100%;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(#00ff87,#00c853);
+    font-weight:bold;
 }
 
-h2 {
-    margin: 10px 0;
+#skipBtn{
+    position:absolute;
+    bottom:10px;
+    right:10px;
+    background:rgba(0,0,0,0.7);
+    padding:8px 12px;
+    border-radius:8px;
+    font-size:12px;
+    display:none;
 }
 
 .btn {
@@ -142,30 +170,12 @@ h2 {
     color: #fff;
     text-decoration: none;
     font-weight: 600;
-    background: #1f2937;
-    transition: 0.2s;
-    border: 1px solid rgba(255,255,255,0.05);
 }
 
-.btn:hover {
-    background: #374151;
-}
-
-.btn-main {
-    background: linear-gradient(180deg, #00ff87, #00c853);
-}
-
-.btn-web {
-    background: linear-gradient(180deg, #7b2cff, #4b00ff);
-}
-
-.btn-alt {
-    background: linear-gradient(180deg, #ff7a18, #ff3d00);
-}
-
-.btn-alt2 {
-    background: linear-gradient(180deg, #00c6ff, #0072ff);
-}
+.btn-main { background: linear-gradient(#00ff87,#00c853); }
+.btn-web { background: linear-gradient(#7b2cff,#4b00ff); }
+.btn-alt { background: linear-gradient(#ff7a18,#ff3d00); }
+.btn-alt2 { background: linear-gradient(#00c6ff,#0072ff); }
 
 .info-box {
     background: rgba(255,255,255,0.05);
@@ -190,130 +200,156 @@ h2 {
 
 <div class="video-container">
 
-    <div class="badge-live">EN VIVO</div>
-
-    <iframe id="player"
-        src="https://la14hd.com/vivo/canales.php?stream=espn"
-        allow="autoplay; fullscreen"
-        allowfullscreen>
-    </iframe>
-
-    <video id="videojs" class="video-js vjs-default-skin" controls playsinline></video>
-
-    <div class="badge-video-live" id="videoLive">EN VIVO</div>
-
-    <div id="loader">
-        <div class="ball-bounce">⚽</div>
-        <div class="shadow"></div>
-        <div class="loader-text">CARGANDO CANAL...</div>
+    <div class="loader" id="loader">
+        <div class="ball">⚽</div>
+        <span>Cargando canal...</span>
     </div>
 
+    <div id="adOverlay">
+        <div id="adBox">
+            <h3>📺 Apoya la app</h3>
+            <p>Mira un anuncio de 15 segundos para continuar disfrutando del contenido en vivo.</p>
+            <button id="verAdBtn">Ver anuncio</button>
+        </div>
+
+        <iframe id="adFrame"></iframe>
+        <div id="skipBtn">Saltar en 15</div>
+    </div>
+
+    <div class="live-label">● EN DIRECTO</div>
+    <video id="player" playsinline muted></video>
+
 </div>
 
-<h2>⚽ COPA LIBERTADORES</h2>
+<h2>⚽ LIGA PRO</h2>
 
 <div class="info-box">
-👉 Presiona cualquiera de los servidores para comenzar a ver el partido en vivo.
+👉 Presiona cualquiera de los servidores para comenzar a ver el canal en vivo.
 </div>
 
-<a class="btn btn-main" onclick="cambiarWeb('https://la14hd.com/vivo/canales.php?stream=espn')">
-SERVIDOR PRINCIPAL
-</a>
-
-<a class="btn btn-web" onclick="cambiarWeb('https://la14hd.com/vivo/canales.php?stream=espn2')">
-SERVIDOR WEB
-</a>
+<a class="btn btn-main" onclick="abrirConAnuncio(link)">SERVIDOR PRINCIPAL</a>
+<a class="btn btn-web" onclick="abrirConAnuncio(link)">SERVIDOR WEB</a>
 
 <div class="info-box">
-⚠️ Los servidores alternos solo se activan cuando hay partidos en vivo.
+⚠️ Los servidores solo se activan cuando hay partidos en vivo.
 </div>
 
-<a href="#" onclick="usarVideo('https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8')" class="btn btn-alt">
-SERVIDOR ALTERNO 1
-</a>
-
-<a href="#" onclick="usarVideo('https://dai.google.com/linear/hls/event/_OKWx76jT7mivD6d-25QAw/master.m3u8')" class="btn btn-alt2">
-SERVIDOR ALTERNO 2
-</a>
+<a class="btn btn-alt" onclick="abrirConAnuncio(link2)">SERVIDOR ALTERNO 1</a>
+<a class="btn btn-alt2" onclick="abrirConAnuncio(link3)">SERVIDOR ALTERNO 2</a>
 
 </div>
 
 <script>
-let bloqueado = false;
-let playerVJS = videojs('videojs');
+let video = document.getElementById("player");
+let loader = document.getElementById("loader");
+let hls;
+let player = new Plyr(video,{controls:['play','mute','volume','fullscreen']});
 
-const loader = document.getElementById("loader");
+let link = "https://teleamazonas-live.cdn.vustreams.com/live/fd4ab346-b4e3-4628-abf0-b5a1bc192428/live.isml/fd4ab346-b4e3-4628-abf0-b5a1bc192428.m3u8";
+let link2 = "https://teleamazonas-live.cdn.vustreams.com/live/fd4ab346-b4e3-4628-abf0-b5a1bc192428/live.isml/fd4ab346-b4e3-4628-abf0-b5a1bc192428.m3u8";
+let link3 = "https://teleamazonas-live.cdn.vustreams.com/live/fd4ab346-b4e3-4628-abf0-b5a1bc192428/live.isml/fd4ab346-b4e3-4628-abf0-b5a1bc192428.m3u8";
 
-playerVJS.on('playing', () => {
-    loader.style.display = "none";
-});
+let urlActual = link;
 
-function cambiarWeb(url) {
-    if (bloqueado) return;
-    bloqueado = true;
+/* 🔥 abrir anuncio (ARREGLADO) */
+function abrirConAnuncio(url){
 
-    const player = document.getElementById("player");
-    const video = document.getElementById("videojs");
-    const live = document.getElementById("videoLive");
+    // 🔥 SOLUCIÓN: cerrar video anterior
+    if(hls){
+        hls.destroy();
+        hls = null;
+    }
 
-    loader.style.display = "flex";
-
-    playerVJS.pause();
-    video.style.display = "none";
-    live.style.display = "none";
-
-    player.style.display = "block";
-    player.style.opacity = "0.4";
-
-    setTimeout(() => {
-        player.src = url;
-    }, 200);
-
-    setTimeout(() => {
-        player.style.opacity = "1";
-        loader.style.display = "none";
-        bloqueado = false;
-    }, 3000);
-}
-
-function usarVideo(url) {
-
-    const iframe = document.getElementById("player");
-    const video = document.getElementById("videojs");
-    const live = document.getElementById("videoLive");
+    video.pause();
+    video.src = "";
+    video.load();
 
     loader.style.display = "flex";
 
-    iframe.src = "";
-    iframe.style.display = "none";
-
-    video.style.display = "block";
-    live.style.display = "block";
-
-    playerVJS.src({
-        src: url,
-        type: "application/x-mpegURL"
-    });
-
-    // 🔥 FIX IMPORTANTE
-    playerVJS.muted(true);
-
-    playerVJS.play().then(() => {
-        loader.style.display = "none";
-    }).catch(() => {
-        loader.style.display = "none";
-    });
+    urlActual = url;
+    adOverlay.style.display = "flex";
+    adBox.style.display = "block";
+    adFrame.style.display = "none";
+    skipBtn.style.display = "none";
 }
+
+/* anuncio */
+let verBtn = document.getElementById("verAdBtn");
+let adFrame = document.getElementById("adFrame");
+let skipBtn = document.getElementById("skipBtn");
+let adOverlay = document.getElementById("adOverlay");
+let adBox = document.getElementById("adBox");
+
+verBtn.onclick = () => {
+
+    adFrame.src = "https://www.profitablecpmratenetwork.com/h8ku4uzbj?key=99c63b5abebc9aaf044650fe8ad01da6";
+
+    adBox.style.display = "none";
+    adFrame.style.display = "block";
+    skipBtn.style.display = "block";
+
+    let t = 15;
+
+    let intervalo = setInterval(()=>{
+        t--;
+        skipBtn.innerText = "Saltar en " + t;
+
+        if(t <= 0){
+            clearInterval(intervalo);
+            skipBtn.innerText = "SALTAR ANUNCIO";
+        }
+    },1000);
+};
+
+skipBtn.onclick = ()=>{
+    if(skipBtn.innerText === "SALTAR ANUNCIO"){
+        adOverlay.style.display = "none";
+        cambiarWeb(urlActual);
+    }
+};
+
+/* VIDEO ORIGINAL */
+function activarAudio(){
+    video.muted = false;
+    video.volume = 1;
+}
+
+function cambiarWeb(url){
+
+    loader.style.display="flex";
+
+    video.onplaying = () => {
+        loader.style.display = "none";
+    };
+
+    if(Hls.isSupported()){
+        hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+            video.muted = true;
+            video.play().then(()=>{
+                setTimeout(()=> activarAudio(),1000);
+            }).catch(()=>{});
+        });
+
+    } else {
+        video.src = url;
+        video.onloadeddata = ()=>{
+            video.muted = true;
+            video.play().then(()=>{
+                setTimeout(()=> activarAudio(),1000);
+            }).catch(()=>{});
+        };
+    }
+}
+
+document.addEventListener("click", activarAudio, {once:true});
+document.addEventListener("touchstart", activarAudio, {once:true});
 
 document.getElementById("appName").innerText =
-"Barcelona SC vs Cruzeiro";
-
-/* 🔥 AUTO INICIO ALTERNO 1 */
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        usarVideo('https://teleamazonas-live.cdn.vustreams.com/live/b545dc57-91af-4f6b-bac7-8d9337166407/live.isml/b545dc57-91af-4f6b-bac7-8d9337166407.m3u8');
-    }, 900);
-});
+"Tcn Universitario vs U catolica";
 </script>
 
 </body>
